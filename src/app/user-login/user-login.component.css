@@ -1,0 +1,42 @@
+.login-form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:100%;
+    margin-top:50px;
+}
+.example-card{
+    display: flex;
+    flex-direction: column;
+    padding:20px;
+}
+.example-footer{
+    font-size: medium;
+    font-family: cursive;
+    padding:10px;
+}
+.card{
+    width:50vw;
+    border: 1px solid greenyellow;
+}
+.Anime{
+    animation: slideIn 1s linear;
+}
+
+@keyframes slideIn {
+    0%{
+        transform: translateX(100%);
+    }
+    50%{
+        transform: translateX(50%);
+    }
+    100%{
+        transform:translateX(0%);
+    }
+}
+
+@media (max-width:800px){
+    .card{
+        width:100vw;
+    }
+}

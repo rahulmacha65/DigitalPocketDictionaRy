@@ -1,0 +1,18 @@
+.tabs{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width:800px) {
+    .tab-group{
+        width:100vw;
+    }
+    ::ng-deep .mat-tab-labels{
+        justify-content:space-around !important;
+    }
+}
+.word-search{
+    background-color: lightblue;
+    background-image: url("src/assets/bg.jpg");
+    background-size: cover;
+}

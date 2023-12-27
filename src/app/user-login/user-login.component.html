@@ -1,0 +1,81 @@
+<div class="login-form Anime"  *ngIf="userLogin" >
+    <mat-card class="card">
+        <mat-card-title style="text-align: center;">LOGIN</mat-card-title>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <mat-card-content class="example-card">
+                <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input matInput placeholder="Email Id" type="text" formControlName="userName">
+                    <mat-error *ngIf="email?.invalid && email?.touched">
+                        Please enter valid email.
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Password</mat-label>
+                    <input matInput placeholder="Password" type="password" formControlName="password">
+                    <mat-error *ngIf="password?.hasError('required') && password?.touched">
+                        Please enter password.
+                    </mat-error>
+                    <mat-error *ngIf="password?.hasError('minlength') && password?.touched">
+                        Password length should be 8 or more.
+                    </mat-error>
+                </mat-form-field>
+                <button mat-raised-button color="primary" type="submit">
+                    Login
+                </button>
+                <div style="text-align: end;margin-top:20px;font-family: cursive;">
+                    New around here? <a href="#" (click)="register()" >Register</a>
+                </div>
+            </mat-card-content>
+        </form>
+        <mat-card-footer class="example-footer">
+            <div>
+                Login is for tracking your history and saved words in the application not for the use of application.
+            </div>
+        </mat-card-footer>
+    </mat-card>
+</div>
+
+<div class="login-form Anime"  *ngIf="!userLogin" >
+    <mat-card  class="card">
+        <mat-card-title style="text-align: center;">Register</mat-card-title>
+        <form [formGroup]="registerForm" (ngSubmit)="registerUser()" >
+            <mat-card-content class="example-card">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input type="email" matInput formControlName="userName">
+                    <mat-error *ngIf="registerEmail?.invalid && registerEmail?.touched">
+                        Please enter valid email.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Password</mat-label>
+                    <input type="password" matInput formControlName="password">
+                    <mat-error *ngIf="registerPassword?.hasError('required') && registerEmail?.touched">
+                        Please enter password.
+                    </mat-error>
+                    <mat-error *ngIf="registerPassword?.hasError('minlength')">
+                        Password length should be 8 or more.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Confirm Password</mat-label>
+                    <input type="password" matInput formControlName="confirmPassword">
+                    <mat-error *ngIf="confirmPassword?.hasError('customError') && confirmPassword?.touched">
+                        Password mismatch.
+                    </mat-error>                    
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit">
+                    Register
+                </button>
+                <div style="text-align: end;margin-top:20px;font-family: cursive;">
+                    Click here to <a href="#" (click)="loginUser()">Login</a>
+                </div>
+            </mat-card-content>
+        </form>
+    </mat-card>
+</div>
