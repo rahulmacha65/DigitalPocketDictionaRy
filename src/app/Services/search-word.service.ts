@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, map, mergeMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, map, mergeMap } from 'rxjs';
 import { IWord } from '../Model/word';
 
 const header = new HttpHeaders({
@@ -11,6 +11,9 @@ const header = new HttpHeaders({
   providedIn: 'root'
 })
 export class SearchWordService {
+
+  bookMarkWord!:IWord | null;
+  unMarkedWord!:string | null;
 
   apiUrl:string="https://api.dictionaryapi.dev/api/v2/entries/en";
   firebaseUrl:string="https://moderndictionary-5869f-default-rtdb.firebaseio.com/";

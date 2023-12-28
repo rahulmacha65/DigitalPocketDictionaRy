@@ -11,8 +11,15 @@
         justify-content:space-around !important;
     }
 }
-.word-search{
-    background-color: lightblue;
-    background-image: url("src/assets/bg.jpg");
-    background-size: cover;
+.word-search:before{
+    content: "";
+    z-index: -1;
+    background: url("src/assets/bg.jpg");
+    opacity: .4;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
 }

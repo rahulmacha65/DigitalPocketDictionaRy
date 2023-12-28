@@ -1,6 +1,11 @@
 <div class="tabs">
     <mat-tab-group class="tab-group" animationDuration="2000ms" selectedIndex="1" >
-        <mat-tab label="Saved" >Saved words</mat-tab>
+        <mat-tab label="Bookmarks" >
+            <!-- <span class="material-symbols-outlined" style="color:black">
+                search
+            </span> -->
+            <div app-book-marks></div>
+        </mat-tab>
         <mat-tab label="Search">
             <div app-search-result class="word-search"></div>
         </mat-tab>

@@ -11,7 +11,7 @@
             search and gain the knowldge..
         </div>
     </div>
-    <div>
+    <div  *ngIf="wordDetails.length>0">
         <div style="margin-top:10px">
             <span style="margin: 10px;">
                 <a [href]="whatsAppUrl" target="_blank">
@@ -19,10 +19,10 @@
                 </a>
             </span>
 
-            <span *ngIf="IsBookMarked" class="material-symbols-outlined" style="float: right;margin:10px" (click)="bookMarked()">
+            <span *ngIf="IsBookMarked" class="material-symbols-outlined" style="float: right;margin:10px;color: black;" (click)="bookMarked()">
                 bookmarks
             </span>
-            <span *ngIf="!IsBookMarked" style="float: right;margin:10px" class="material-symbols-outlined" (click)="bookMarked()">
+            <span *ngIf="!IsBookMarked" style="float: right;margin:10px;color: black;" class="material-symbols-outlined" (click)="removebookMarked()">
                 bookmark_added
             </span>
             
@@ -39,7 +39,7 @@
         </div>
         <div class="phonetics" *ngFor="let item of phonetics;">
             <div>
-                <span *ngIf="item.audio" class="material-symbols-outlined" (click)="volumeClicked(item.audio)">
+                <span *ngIf="item.audio" style="color:black" class="material-symbols-outlined" (click)="volumeClicked(item.audio)">
                     volume_up
                 </span>
             </div>

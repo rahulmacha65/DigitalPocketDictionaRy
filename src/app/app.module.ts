@@ -18,6 +18,7 @@ import { SearchResultComponent } from './search-result/search-result.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { BookMarksComponent } from './book-marks/book-marks.component';
 
 
 const materialComponents=[
@@ -36,7 +37,8 @@ const materialComponents=[
     AppComponent,
     UserLoginComponent,
     HomeComponent,
-    SearchResultComponent
+    SearchResultComponent,
+    BookMarksComponent
   ],
   imports: [
     BrowserModule,

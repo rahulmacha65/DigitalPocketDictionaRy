@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { SearchWordService } from '../Services/search-word.service';
 import { IWord } from '../Model/word';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { BookmarkwordsService } from '../Services/bookmarkwords.service';
 
 @Component({
   selector: '[app-search-result]',
@@ -13,6 +14,8 @@ import { ActivatedRoute } from '@angular/router';
 
 export class SearchResultComponent implements OnInit, OnDestroy {
 
+
+
   searchedWord: FormControl = new FormControl();
   wordDetails: IWord[] = [];
   phonetics: any[] = [];
@@ -20,18 +23,20 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   partsOfSpeech: string[] = [];
   otherMeanings: string[] = [];
   otherMeaningsString!: string;
-  whatsAppUrl:string | undefined;
-  showSpinner:boolean=false;
-  IsBookMarked:boolean=true;
-  constructor(private _searchWord: SearchWordService, private _snackBar: MatSnackBar,private _route:ActivatedRoute) { }
+  whatsAppUrl: string | undefined;
+  showSpinner: boolean = false;
+  IsBookMarked: boolean = true;
+
+  constructor(private _searchWord: SearchWordService, private _snackBar: MatSnackBar, private _route: ActivatedRoute,
+    private _bookMark: BookmarkwordsService) { }
 
   ngOnDestroy(): void {
     this._snackBar.ngOnDestroy();
   }
 
   ngOnInit(): void {
-    this._route.queryParams.subscribe(data=>{
-      if(Object.keys(data).length>0){
+    this._route.queryParams.subscribe(data => {
+      if (Object.keys(data).length > 0) {
         this.searchedWord.setValue(data['word']);
         this.getWordDetails()
       }
@@ -45,61 +50,66 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   getWordDetails() {
-    this.whatsAppUrl =undefined;
+
+    this.whatsAppUrl = undefined;
+    this.IsBookMarked = true;
     this.wordDetails = [];
     this.partsOfSpeech = [];
     this.phonetics = [];
     this.meaning = [];
     this.otherMeanings = [];
-    this.showSpinner=true;
+    this.showSpinner = true;
+
     if (!this.searchedWord.value) {
       this._snackBar.open("please enter word", "Dismiss");
       return;
     }
+
     this.whatsAppUrl = `https://api.whatsapp.com/send?text=${location.href}?word=${this.searchedWord.value}`;
     this._searchWord.getWordFormFireBase(this.searchedWord.value.toLowerCase()).subscribe({
       next: (data) => {
-        this.showSpinner=false;
-        if(data!=null){
+        this.showSpinner = false;
+        if (data != null) {
           this.transformWordDetails(data);
           console.log("took from firebase");
-        }else{
+        } else {
           this.getWordDetailsFromDictionaryApi(this.searchedWord.value.toLocaleLowerCase());
           console.log("took from dictionary api");
         }
+        this.IsWordBookmarked();
       },
       error: (error) => {
-        this.showSpinner=false;
+        this.showSpinner = false;
         console.log(error);
       }
     })
   }
 
-  getWordDetailsFromDictionaryApi(word:string){
+  getWordDetailsFromDictionaryApi(word: string) {
     this._searchWord.getWord(word).subscribe({
-      next:data=>{
+      next: data => {
         this.transformWordDetails(data);
-        this.putWordIntoFirebase(word,data);
+        this.putWordIntoFirebase(word, data);
       },
-      error:error=>{
+      error: error => {
         console.log(error);
-        this._snackBar.open("Please enter correct word!!!","Dismiss")
+        this._snackBar.open("Please enter correct word!!!", "Dismiss")
       }
     })
   }
 
-  putWordIntoFirebase(word:string,wordDetails:Array<IWord>){
-    this._searchWord.putWordToFireBase(wordDetails,word).subscribe({
-      next:data=>{
+  putWordIntoFirebase(word: string, wordDetails: Array<IWord>) {
+    this._searchWord.putWordToFireBase(wordDetails, word).subscribe({
+      next: data => {
         console.log(word.toUpperCase() + " Posted to firebase ");
       },
-      error:error=>{
+      error: error => {
         console.log(error);
       }
     })
   }
 
-  transformWordDetails(data:Array<IWord>) {
+  transformWordDetails(data: Array<IWord>) {
     this.wordDetails = data.flat();
     console.log(this.wordDetails[0]);
     for (let i = 0; i < this.wordDetails[0].phonetics.length; i++) {
@@ -129,17 +139,17 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     }
     if (part === "antonyms") {
       for (let k = 0; k < this.wordDetails[0].meanings.length; k++) {
-        if(this.wordDetails[0].meanings[k].antonyms){
+        if (this.wordDetails[0].meanings[k].antonyms) {
           for (let m = 0; m < this.wordDetails[0].meanings[k].antonyms.length; m++) {
             this.otherMeanings.push(this.wordDetails[0].meanings[k].antonyms[m])
           }
         }
-      }      
+      }
     }
 
     if (part === "synonyms") {
       for (let k = 0; k < this.wordDetails[0].meanings.length; k++) {
-        if(this.wordDetails[0].meanings[k].synonyms){
+        if (this.wordDetails[0].meanings[k].synonyms) {
           for (let m = 0; m < this.wordDetails[0].meanings[k].synonyms.length; m++) {
             this.otherMeanings.push(this.wordDetails[0].meanings[k].synonyms[m])
           }
@@ -148,8 +158,62 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     }
   }
 
-  bookMarked(){
-    this.IsBookMarked = (this.IsBookMarked)?false:true;
+  IsWordBookmarked(){
+    this._bookMark.getBookmarkWords('rahul').subscribe(data=>{
+      if(data!=null){
+        if(Object.keys(data).find(x => x==this.searchedWord.value.toLowerCase())){
+          this.IsBookMarked=false;
+        }
+      }
+    })
+  }
+
+  bookMarked() {
+    this._bookMark.getBookmarkWords('rahul').subscribe(data => {
+      if(data!=null){
+        if (!Object.keys(data).find(x => x == this.searchedWord.value.toLowerCase())) {
+          this.postWordToFirebase();
+          this._searchWord.bookMarkWord = this.wordDetails[0];
+          this.IsBookMarked = false;
+          this._snackBar.open("Successfully bookmarked", "Dismiss");
+        }
+        else {
+          this._snackBar.open("Already book marked please check in your book mark list", "Dismiss");
+        }
+      }else{
+        this.postWordToFirebase();
+        this._searchWord.bookMarkWord = this.wordDetails[0];
+        this.IsBookMarked = (this.IsBookMarked) ? false : true;
+        this._snackBar.open("Successfully bookmarked", "Dismiss");
+      }
+
+    });
+  }
+
+  removebookMarked(){
+    this.IsBookMarked = true;
+    this._bookMark.deleteBookMarkWord(this.searchedWord.value.toLowerCase(),'rahul').subscribe(_=>{
+      this._snackBar.open("Removed from bookmarks","Dismiss");
+      this._searchWord.unMarkedWord=this.searchedWord.value.toLowerCase();
+    })
+  }
+  
+  postWordToFirebase() {
+    let wordInfo: Array<IWord> = [];
+    if (this.wordDetails.length > 1) {
+      wordInfo.push(this.wordDetails[0]);
+    } else {
+      wordInfo = this.wordDetails;
+    }
+    this._bookMark.putBookmarkWordsInFirebase('rahul', wordInfo).subscribe({
+      next: (data) => {
+        console.log("Posted to firebase !!");
+      },
+      error: error => {
+        console.log(error);
+        this._snackBar.open("Technical error occured while bookmarking please try after some time");
+      }
+    })
   }
 
 }
