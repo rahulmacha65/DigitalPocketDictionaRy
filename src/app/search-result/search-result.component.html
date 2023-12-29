@@ -2,30 +2,33 @@
     <div>
         <mat-form-field appearance="outline" style="width: 100%;">
             <mat-label style="font-family: cursive; color:black">search word</mat-label>
-            <input type="text" matInput [formControl]="searchedWord" style="color:black" autocomplete="off" (keypress)="inputKeys($event)">
+            <input type="text" matInput [formControl]="searchedWord" style="color:black" autocomplete="off"
+                (keypress)="inputKeys($event)">
         </mat-form-field>
-        <button mat-raised-button type="submit" color="primary"  (click)="getWordDetails()">search</button>
+        <button mat-raised-button type="submit" color="primary" (click)="getWordDetails()">search</button>
     </div>
     <div *ngIf="wordDetails.length<=0" class="message">
         <div style="color:black;margin-bottom: 100px;">
             search and gain the knowldge..
         </div>
     </div>
-    <div  *ngIf="wordDetails.length>0">
+    <div *ngIf="wordDetails.length>0">
         <div style="margin-top:10px">
             <span style="margin: 10px;">
-                <a [href]="whatsAppUrl" target="_blank">
+                <a [href]="whatsAppUrl" target="_blank" matTooltip="share on whatsApp">
                     <img src="assets/whatsApp.png" class="whatsApp-ng" alt="share on whatsApp">
                 </a>
             </span>
-
-            <span *ngIf="IsBookMarked" class="material-symbols-outlined" style="float: right;margin:10px;color: black;" (click)="bookMarked()">
+            <mat-icon *ngIf="IsBookMarked" matTooltip="bookmark"
+                style="float: right;margin:10px;color: black;cursor: pointer;"
+                (click)="bookMarked()">bookmarks</mat-icon>
+            <!-- <span *ngIf="IsBookMarked" class="material-symbols-outlined" style="float: right;margin:10px;color: black;" (click)="bookMarked()">
                 bookmarks
-            </span>
-            <span *ngIf="!IsBookMarked" style="float: right;margin:10px;color: black;" class="material-symbols-outlined" (click)="removebookMarked()">
+            </span> -->
+            <span *ngIf="!IsBookMarked" matTooltip="remove from bookmark" style="float: right;margin:10px;color: black;"
+                class="material-symbols-outlined" (click)="removebookMarked()">
                 bookmark_added
             </span>
-            
         </div>
     </div>
     <div *ngIf="showSpinner" class="spinner">
@@ -35,23 +38,24 @@
         <div class="word">
             <h1 style="font-family: cursive;">
                 <span class="text-bg">{{wordDetails[0].word | titlecase}}</span>
-             </h1>
+            </h1>
         </div>
         <div class="phonetics" *ngFor="let item of phonetics;">
             <div>
-                <span *ngIf="item.audio" style="color:black" class="material-symbols-outlined" (click)="volumeClicked(item.audio)">
+                <span *ngIf="item.audio" style="color:black" matTooltip="Volume up" class="material-symbols-outlined"
+                    (click)="volumeClicked(item.audio)">
                     volume_up
                 </span>
             </div>
             <a *ngIf="item.sourceUrl" [href]="item.sourceUrl" target="_blank">
-                <span class="text-bg">Wikimedia</span>
+                <span class="text-bg" matTooltip="word media url">Wikimedia</span>
             </a>
             <h3 *ngIf="item.text">
                 <span class="text-bg">{{item.text}}</span>
             </h3>
-            <div *ngFor="let item of wordDetails[0].sourceUrls" >
+            <div *ngFor="let item of wordDetails[0].sourceUrls">
                 <a [href]="item" target="_blank">
-                    <span class="text-bg">Wiki Url</span>
+                    <span class="text-bg" matTooltip="wikipedia">Wiki Url</span>
                 </a>
             </div>
         </div>
@@ -65,7 +69,7 @@
                 <div class="meaning" *ngIf="item.definitions">
                     <div *ngFor="let def of item.definitions; let i=index">
                         <strong *ngIf="i==0" class="text-bg">
-                            Defination: 
+                            Defination:
                         </strong>
                         <li style="width:500px;">
                             <span class="text-bg">{{def.definition}}</span>

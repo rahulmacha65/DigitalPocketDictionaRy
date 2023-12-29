@@ -20,5 +20,6 @@ export interface IWord {
         }
     ],
     sourceUrls: string[],
-    searchedUser:string
+    searchedUser:string,
+    time:string,
 }

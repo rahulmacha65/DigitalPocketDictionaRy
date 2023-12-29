@@ -19,6 +19,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { BookMarksComponent } from './book-marks/book-marks.component';
+import { SearchHistoryComponent } from './search-history/search-history.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 const materialComponents=[
@@ -29,7 +31,8 @@ const materialComponents=[
   MatTabsModule,
   MatIconModule,
   MatButtonToggleModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatTooltipModule 
 ]
 
 @NgModule({
@@ -38,7 +41,8 @@ const materialComponents=[
     UserLoginComponent,
     HomeComponent,
     SearchResultComponent,
-    BookMarksComponent
+    BookMarksComponent,
+    SearchHistoryComponent
   ],
   imports: [
     BrowserModule,

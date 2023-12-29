@@ -1,14 +1,19 @@
 <div class="container" *ngIf="bookMarkedWords.length>0">
     <mat-card class="card" *ngFor="let item of bookMarkedWords">
         <mat-card-title style="text-align: center;">
-            <a  [href]="navigateTo" (click)="wordClicked(item.word)">{{item.word | titlecase}}</a>
-            <span style="float: right;margin:10px;color: black;" class="material-symbols-outlined" (click)="removeFromBookMark(item.word)">
+            <a  [href]="navigateTo" (click)="wordClicked(item.word)"
+            matTooltip="Click for more details"
+            >{{item.word | titlecase}}</a>
+            <span style="float: right;margin:10px;color: black;" class="material-symbols-outlined"
+             matTooltip="remove from bookmark"
+             (click)="removeFromBookMark(item.word)">
                 bookmark_added
             </span>
         </mat-card-title>
         <mat-card-content class="content">
             <div>
-                <span class="material-symbols-outlined" style="color:black" (click)="audioClicked(item.phonetics[0].audio)">
+                <span class="material-symbols-outlined" matTooltip="Volume up" 
+                style="color:black" (click)="audioClicked(item.phonetics[0].audio)">
                     volume_up
                 </span>
             </div>

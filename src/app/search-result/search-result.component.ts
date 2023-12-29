@@ -5,6 +5,7 @@ import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BookmarkwordsService } from '../Services/bookmarkwords.service';
+import { HistoryServiceService } from '../Services/history-service.service';
 
 @Component({
   selector: '[app-search-result]',
@@ -28,7 +29,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   IsBookMarked: boolean = true;
 
   constructor(private _searchWord: SearchWordService, private _snackBar: MatSnackBar, private _route: ActivatedRoute,
-    private _bookMark: BookmarkwordsService) { }
+    private _bookMark: BookmarkwordsService,private _history:HistoryServiceService) { }
 
   ngOnDestroy(): void {
     this._snackBar.ngOnDestroy();
@@ -76,10 +77,46 @@ export class SearchResultComponent implements OnInit, OnDestroy {
           this.getWordDetailsFromDictionaryApi(this.searchedWord.value.toLocaleLowerCase());
           console.log("took from dictionary api");
         }
-        this.IsWordBookmarked();
       },
       error: (error) => {
         this.showSpinner = false;
+        console.log(error);
+      }
+    })
+  }
+
+  IsWordExistsInHistory(userName:string,wordDetails:Array<IWord>){
+    this._history.getHistory(userName).subscribe({
+      next:(data)=>{
+        if(data!=null){
+          if(Object.keys(data).find(x=> x!=this.searchedWord.value.toLowerCase())){
+            const date = new Date();
+            wordDetails[0].time = date.toLocaleString();
+            this._history.searchedHistory=wordDetails[0];
+            this.postToHistoryDB(userName);
+          }
+        }else{
+          const date = new Date();
+          wordDetails[0].time = date.toLocaleString();
+          this._history.searchedHistory=wordDetails[0];
+          this.postToHistoryDB(userName);
+        }
+      }
+    })
+  }
+
+  postToHistoryDB(userName:string){
+    let wordInfo: Array<IWord> = [];
+    if (this.wordDetails.length > 1) {
+      wordInfo.push(this.wordDetails[0]);
+    } else {
+      wordInfo = this.wordDetails;
+    }
+    this._history.putSearchWordToFireBase(userName,wordInfo).subscribe({
+      next: _ => {
+        console.log("History Posted to firebase ");
+      },
+      error: error => {
         console.log(error);
       }
     })
@@ -122,6 +159,8 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
     this.partsOfSpeech.push("antonyms");
     this.partsOfSpeech.push("synonyms");
+    this.IsWordBookmarked();
+    this.IsWordExistsInHistory('rahul',data);
   }
 
   volumeClicked(url: string) {
