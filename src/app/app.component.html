@@ -5,8 +5,8 @@
             Digital Pocket Dictionary
         </div>
         <div>
-            <div class="person" (click)="showLogout()">
-                <span class="userName">Rahul</span>
+            <div class="person" (click)="showLogout()" *ngIf="userName">
+                <span class="userName">{{userName | titlecase}}</span>
                 <mat-icon>person</mat-icon>
             </div>
             <div class="logout" *ngIf="loggingOut" >

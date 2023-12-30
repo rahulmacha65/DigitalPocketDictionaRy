@@ -3,6 +3,7 @@ import { SearchWordService } from '../Services/search-word.service';
 import { IWord } from '../Model/word';
 import { BookmarkwordsService } from '../Services/bookmarkwords.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../Services/auth.service';
 
 @Component({
   selector: '[app-book-marks]',
@@ -11,10 +12,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class BookMarksComponent implements OnInit,DoCheck {
 
-  constructor(private _searchWord:SearchWordService,private _bookmark:BookmarkwordsService,private _snack:MatSnackBar) { }
+  constructor(private _searchWord:SearchWordService,private _bookmark:BookmarkwordsService,private _snack:MatSnackBar,private _auth:AuthService) { }
   bookMarkedWords:Array<IWord>=[];
   navigateTo!:string;
-  
+  loggedInUser!:string;
   ngDoCheck(): void {
     if(this._searchWord.bookMarkWord !=null){
       this.bookMarkedWords.push(this._searchWord.bookMarkWord);
@@ -31,8 +32,8 @@ export class BookMarksComponent implements OnInit,DoCheck {
   }
 
   ngOnInit(): void {
-    
-    this._bookmark.getBookmarkWords('rahul').subscribe(data=>{
+    this.loggedInUser =  this._auth.getUserName();
+    this._bookmark.getBookmarkWords(this.loggedInUser).subscribe(data=>{
       if(data){
         data = Object.values(data).flat();
         data.forEach(item=>{
@@ -54,7 +55,7 @@ export class BookMarksComponent implements OnInit,DoCheck {
       return false;
     });
 
-    this._bookmark.deleteBookMarkWord(word,'rahul').subscribe(_=>{
+    this._bookmark.deleteBookMarkWord(word,this.loggedInUser).subscribe(_=>{
       this._snack.open("Removed form book marks", "Dismiss");
     })
     

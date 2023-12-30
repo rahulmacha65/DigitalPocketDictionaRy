@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BookmarkwordsService } from '../Services/bookmarkwords.service';
 import { HistoryServiceService } from '../Services/history-service.service';
+import { AuthService } from '../Services/auth.service';
 
 @Component({
   selector: '[app-search-result]',
@@ -27,15 +28,17 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   whatsAppUrl: string | undefined;
   showSpinner: boolean = false;
   IsBookMarked: boolean = true;
+  loggedInUser:string="";
 
   constructor(private _searchWord: SearchWordService, private _snackBar: MatSnackBar, private _route: ActivatedRoute,
-    private _bookMark: BookmarkwordsService,private _history:HistoryServiceService) { }
+    private _bookMark: BookmarkwordsService,private _history:HistoryServiceService,private _auth:AuthService) { }
 
   ngOnDestroy(): void {
     this._snackBar.ngOnDestroy();
   }
 
   ngOnInit(): void {
+    this.loggedInUser = this._auth.getUserName();
     this._route.queryParams.subscribe(data => {
       if (Object.keys(data).length > 0) {
         this.searchedWord.setValue(data['word']);
@@ -159,8 +162,11 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
     this.partsOfSpeech.push("antonyms");
     this.partsOfSpeech.push("synonyms");
-    this.IsWordBookmarked();
-    this.IsWordExistsInHistory('rahul',data);
+    
+    if(this.loggedInUser!=""){
+      this.IsWordBookmarked();
+      this.IsWordExistsInHistory(this.loggedInUser,data);
+    }
   }
 
   volumeClicked(url: string) {
@@ -198,7 +204,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   IsWordBookmarked(){
-    this._bookMark.getBookmarkWords('rahul').subscribe(data=>{
+    this._bookMark.getBookmarkWords(this.loggedInUser).subscribe(data=>{
       if(data!=null){
         if(Object.keys(data).find(x => x==this.searchedWord.value.toLowerCase())){
           this.IsBookMarked=false;
@@ -208,7 +214,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   bookMarked() {
-    this._bookMark.getBookmarkWords('rahul').subscribe(data => {
+    this._bookMark.getBookmarkWords(this.loggedInUser).subscribe(data => {
       if(data!=null){
         if (!Object.keys(data).find(x => x == this.searchedWord.value.toLowerCase())) {
           this.postWordToFirebase();
@@ -231,7 +237,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   removebookMarked(){
     this.IsBookMarked = true;
-    this._bookMark.deleteBookMarkWord(this.searchedWord.value.toLowerCase(),'rahul').subscribe(_=>{
+    this._bookMark.deleteBookMarkWord(this.searchedWord.value.toLowerCase(),this.loggedInUser).subscribe(_=>{
       this._snackBar.open("Removed from bookmarks","Dismiss");
       this._searchWord.unMarkedWord=this.searchedWord.value.toLowerCase();
     })
@@ -244,7 +250,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     } else {
       wordInfo = this.wordDetails;
     }
-    this._bookMark.putBookmarkWordsInFirebase('rahul', wordInfo).subscribe({
+    this._bookMark.putBookmarkWordsInFirebase(this.loggedInUser, wordInfo).subscribe({
       next: (data) => {
         console.log("Posted to firebase !!");
       },

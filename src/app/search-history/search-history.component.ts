@@ -2,6 +2,7 @@ import { Component, DoCheck, OnInit } from '@angular/core';
 import { IWord } from '../Model/word';
 import { HistoryServiceService } from '../Services/history-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../Services/auth.service';
 
 export interface Vegetable {
   name: string;
@@ -16,8 +17,8 @@ export class SearchHistoryComponent implements OnInit,DoCheck {
 
   history:Array<IWord>=[];
   navigateTo!:string
-
-  constructor(private _wordhistory:HistoryServiceService,private _snack:MatSnackBar) { }
+  loggedInUser:string="";
+  constructor(private _wordhistory:HistoryServiceService,private _snack:MatSnackBar,private _auth:AuthService) { }
 
   ngDoCheck(): void {
     if(this._wordhistory.searchedHistory !=null){
@@ -29,7 +30,8 @@ export class SearchHistoryComponent implements OnInit,DoCheck {
   }
 
   ngOnInit(): void {
-    this._wordhistory.getHistory('rahul').subscribe(data=>{
+    this.loggedInUser=this._auth.getUserName();
+    this._wordhistory.getHistory(this.loggedInUser).subscribe(data=>{
       data = Object.values(data).flat();
       data.forEach(item=>{
         this.history.push(item);
@@ -43,7 +45,7 @@ export class SearchHistoryComponent implements OnInit,DoCheck {
   }
 
   deleteFromHistory(word:string){
-    this._wordhistory.deleteHistory('rahul',word).subscribe(
+    this._wordhistory.deleteHistory(this.loggedInUser,word).subscribe(
       {
         next:data=>{
           this._snack.open("History delete successfully.","Dismiss");

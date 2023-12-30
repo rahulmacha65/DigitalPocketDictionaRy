@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {  Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Route, Router } from '@angular/router';
@@ -72,6 +72,7 @@ export class UserLoginComponent implements OnInit,OnDestroy {
       this._authService.loginUser(loginUserDetails).subscribe({
         next:data=>{
           if(data==true){
+            this._authService.storeUserName(loginUserDetails.userName);
             this._router.navigateByUrl("/home");
           }else{
             this._snackBar.open("Login failed!! email or password is wrong.","Dismiss");
@@ -107,6 +108,7 @@ export class UserLoginComponent implements OnInit,OnDestroy {
     this._authService.registerUser(registerUserDetails).subscribe({
       next:(data)=>{
         this._snackBar.open("Registration Successful","Dismiss")
+        this._authService.storeUserName(registerUserDetails.userName);
         this._router.navigateByUrl("/home");
       },
       error:(error)=>{
